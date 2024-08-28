@@ -15,7 +15,7 @@ class Lambda : public Type
     Lambda* deepcopy() const override;
 
     const Func cons(const Var&, const Term&, const char* = nullptr) const;
-    const std::shared_ptr<Term> apply(const Func&, const Term&) const;
+    const std::unique_ptr<const Term, TermDeleter> apply(const Func&, const Term&) const;
 
     std::string get_name() const override;
     std::string get_uid() const override;

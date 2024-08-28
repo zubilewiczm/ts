@@ -1,10 +1,16 @@
 #include "type.h"
+
+#include <memory>
+#include <string>
+
+#include "exception.h"
 #include "util.h"
 
 const Type T("Type");
 const Type N("Empty");
 
 Type::Type(const std::string& name) : Term(name) {}
+Type::Type(const std::string& name, const Args& args) : Term(name, T, args) {}
 Type::Type(const Type& t) : Type(t.mName) {}
 Type* Type::clone() const { return new Type(*this); }
 Type* Type::deepcopy() const
@@ -14,16 +20,35 @@ Type* Type::deepcopy() const
   return copy;
 }
 
-std::string
-Type::get_name() const
+std::set<std::shared_ptr<const Var>>
+Type::get_free_vars() const
 {
-  return mName;
+  return traverse_free_vars();
+}
+
+bool
+Type::has_free_var(const Var& v) const
+{
+  for (const auto& term : mVars) {
+    if (term->has_free_var(v)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::string
 Type::get_uid() const
 {
-  return std::string("τ") + uid_escape(mName);
+  auto uid = std::string(Type::PFX) + uid_escape(get_name());
+  if (!mVars.empty()) {
+    uid += "{";
+    for (const auto& t : mVars) {
+      uid += t->get_uid() + ",";
+    }
+    uid.back() = '}';
+  }
+  return uid;
 }
 
 const Type&
@@ -32,15 +57,16 @@ Type::get_type() const
   return T;
 }
 
-const Type&
+std::unique_ptr<const Type, TermDeleter>
 Type::cons(const Term& v)
 {
-  const Type* ptr = nullptr;
   if (v.get_type() == T) {
-    ptr = dynamic_cast<const Type*>(this);
+    if (v == T || v.get_uid() == std::string(Term::PFX) + "Type") {
+      return std::unique_ptr<const Type, TermDeleter>(&T);
+    }
+    else {
+      return std::make_unique<const Type>(get_name());
+    }
   }
-  if (ptr == nullptr) {
-    throw v.get_name() + " is not a type";
-  }
-  return *ptr;
+  throw type_exception(v.get_name() + " is not a type");
 }

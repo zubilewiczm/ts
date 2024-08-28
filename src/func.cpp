@@ -22,7 +22,7 @@ Func::get_uid() const
   return std::string("λ") + uid_escape(mName);
 }
 
-std::shared_ptr<Term>
+std::unique_ptr<const Term, TermDeleter>
 Func::apply(const Term& x) const
 {
   return mTerm.subs(*mBoundVar, x);

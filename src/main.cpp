@@ -1,3 +1,4 @@
+#include <exception>
 #include <iostream>
 
 #include "type.h"
@@ -62,8 +63,8 @@ int main()
   std::cout << l.get_name_and_type() << std::endl;
   std::cout << F.apply(l,x)->get_name() << std::endl;
   std::cout << F.apply(l,*F.apply(l,x))->get_name_and_type() << std::endl;
-  } catch (std::string s) {
-    std::cout << s << std::endl;
+  } catch (std::exception e) {
+    std::cout << e.what() << std::endl;
   }
   return 0;
 }

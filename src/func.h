@@ -16,7 +16,7 @@ class Func : public Term
     std::string get_uid() const override;
 
   protected:
-    std::shared_ptr<Term> apply(const Term&) const;
+    std::unique_ptr<const Term, TermDeleter> apply(const Term&) const;
 
     Term mTerm;
     std::unique_ptr<const Var> mBoundVar;

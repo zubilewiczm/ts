@@ -50,7 +50,7 @@ Lambda::cons(const Var& var, const Term& f, const char* n) const
   return Func(name, *this, f, var);
 }
 
-const std::shared_ptr<Term>
+const std::unique_ptr<const Term, TermDeleter>
 Lambda::apply(const Func& f, const Term& x) const
 {
   if (f.get_type() != *this) {

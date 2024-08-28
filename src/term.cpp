@@ -1,3 +1,4 @@
+#include "exception.h"
 #include "term.h"
 #include "type.h"
 #include "util.h"
@@ -25,6 +26,19 @@ Term::Term(const std::string& name, const Type& type, const Args& vars)
   std::transform(vars.begin(), vars.end(), mVars.begin(), [](const Term* t) {
     return std::shared_ptr<const Term>(t->clone());
   });
+
+  auto tvars = mType->get_free_vars();
+  auto argvars = traverse_free_vars();
+  if (!std::includes(argvars.begin(), argvars.end(),
+                     tvars.begin(), tvars.end()) )
+  {
+    std::stringstream err;
+    err << "Free variables of "
+        << mType->get_name()
+        << " are not included as variables inside the term "
+        << get_name() << ".";
+    throw type_exception(err.str());
+  }
 }
 
 Term::Term(const std::string& name, const Type& type)
@@ -54,11 +68,14 @@ void Term::deepcopy_term_from(const ArgsStorage& src)
 }
 
 
-std::shared_ptr<Term>
+std::unique_ptr<const Term, TermDeleter>
 Term::subs(const Var& var, const Term& repl) const
 {
+  if (*this == T) {
+    return std::unique_ptr<const Term, TermDeleter>(&T);
+  }
   const SubsNode tree = this->subs_make_diff_tree(var);
-  auto self_copy = std::shared_ptr<Term>(this->clone());
+  auto self_copy = std::unique_ptr<Term, TermDeleter>(this->clone());
   auto repl_copy = std::shared_ptr<Term>(repl.deepcopy());
   self_copy->subs_repl(var, repl_copy, tree);
   return self_copy;
@@ -73,7 +90,7 @@ Term::subs_make_diff_tree(const Var& var) const
   if (*mType != T) {
     node.typeNode = std::make_unique<SubsNode>(mType->subs_make_diff_tree(var));
   }
-  if (mVars.empty() && *this == var) {
+  if (is_var() && *this == var) {
     node.subsP = SUBS_REPLACE;
   }
   else {
@@ -118,6 +135,38 @@ Term::subs_repl(const Var& var, const std::shared_ptr<const Term>& repl, const S
   }
 }
 
+std::set<std::shared_ptr<const Var>>
+Term::get_free_vars() const
+{
+  auto fvars = mType->get_free_vars();
+  auto fvars_tree = traverse_free_vars();
+  fvars.insert(fvars_tree.begin(), fvars_tree.end());
+  return fvars;
+}
+
+std::set<std::shared_ptr<const Var>>
+Term::traverse_free_vars() const
+{
+  std::set<std::shared_ptr<const Var>> fvars;
+  std::set<std::shared_ptr<const Var>> other_fvars;
+  for (const auto& el : mVars) {
+    other_fvars = el->get_free_vars();
+    fvars.insert(other_fvars.begin(), other_fvars.end());
+  }
+  return fvars;
+}
+
+bool
+Term::has_free_var(const Var& v) const
+{
+  for (const auto& term : mVars) {
+    if (term->has_free_var(v)) {
+      return true;
+    }
+  }
+  return mType->has_free_var(v);
+}
+
 
 std::string
 Term::get_name() const
@@ -143,28 +192,16 @@ Term::get_name_and_type() const
 std::string
 Term::get_uid() const
 {
-  auto uid = std::string("ρ") + uid_escape(get_name());
-  if (mVars.empty()) {
+  auto uid = std::string(Term::PFX) + uid_escape(get_name());
+  if (!mVars.empty()) {
     uid += "{";
     for (const auto& t : mVars) {
       uid += t->get_uid() + ",";
     }
-    uid[-1] = '}';
+    uid.back() = '}';
   }
   uid += ":" + mType->get_uid();
   return uid;
-}
-
-const Type&
-Term::get_type() const
-{
-  return *mType;
-}
-
-const std::string&
-Term::get_head() const
-{
-  return mName;
 }
 
 
@@ -175,11 +212,18 @@ Term::get_arg(int i) const
   if (i >= len || i < 0) {
     std::stringstream ss;
     ss << "The term " << get_name() << " has no argument " << i;
-    throw ss.str();
+    throw type_exception(ss.str());
   }
   else {
     return *mVars[i];
-  }
+ }
+}
+
+
+bool
+Term::is_type() const
+{
+  return *mType == T;
 }
 
 
@@ -193,4 +237,14 @@ bool
 operator!=(const Term& lhs, const Term& rhs)
 {
   return !(lhs == rhs);
+}
+
+
+
+void
+TermDeleter::operator()(const Term* t)
+{
+  if (t != &T && t!= &N) {
+    delete t;
+  }
 }

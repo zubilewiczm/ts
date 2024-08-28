@@ -18,7 +18,7 @@ CXXFLAGS  =$(INCLUDES) -MMD -MP -fdiagnostics-color=always
 LDFLAGS   =$(LIBRARIES)
 DBGFLAGS  =-O$(OPTLEVEL) -g$(GDBLEVEL)
 
-OBJ := main.o var.o type.o term.o func.o lambda.o util.o
+OBJ := main.o var.o type.o term.o func.o lambda.o util.o exception.o
 
 INCLUDES  =$(SRCDIR:%=-I"%")
 LIBRARIES =$(LIBDIR:%=-L"%") $(LIBS:%=-l%)
