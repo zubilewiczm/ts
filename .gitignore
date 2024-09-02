@@ -1,3 +1,5 @@
 ts
 obj/*
 make.log
+gmon.out
+*.txt

@@ -17,6 +17,7 @@ CXX       =g++
 CXXFLAGS  =$(INCLUDES) -MMD -MP -fdiagnostics-color=always
 LDFLAGS   =$(LIBRARIES)
 DBGFLAGS  =-O$(OPTLEVEL) -g$(GDBLEVEL)
+PROFFLAGS =-pg
 
 OBJ := main.o Var.o Type.o Term.o Util.o Exception.o \
 			 ArgList.o Symbol.o \
@@ -35,14 +36,19 @@ LOG =2>&1 | tee -a $(PREFIX)/make.log
 
 ##################################################################
 
-.PHONY: release asm clean all print remove-logs
-	
+.PHONY: release debug asm clean all print remove-logs
+
+debug : CFLAGS += $(DBGFLAGS) $(PROFFLAGS)
+debug : CXXFLAGS += $(DBGFLAGS) $(PROFFLAGS)
+debug : LDFLAGS += $(PROFFLAGS)
+debug : all
+
 release : all
 
 asm : $(ASM)
 
 clean :
-	@rm -f $(OBJFULL) $(BINDIR)/$(BIN)
+	rm -f $(OBJFULL) $(BINDIR)/$(BIN)
 	@echo "Cleaned"
 
 print :
@@ -56,8 +62,8 @@ $(BINDIR)/$(BIN) : $(OBJFULL)
 	$(CXX) -o $(BINDIR)/$(BIN) $(LDFLAGS) $(OBJFULL) $(LOG)
 
 $(OBJFULL) : $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@echo $< $(@D)
+	@echo $<
 	@mkdir -p $(@D)
-	$(CXX) -c -o $@ $(CXXFLAGS) $(DBGFLAGS) $< $(LOG)
+	$(CXX) -c -o $@ $(CXXFLAGS) $< $(LOG)
 
 -include $(DEPS)

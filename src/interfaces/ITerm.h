@@ -30,10 +30,17 @@ class ITerm :
   public IClonable<ITerm>
 {
   public:
+    virtual ~ITerm() = default;
+
     virtual std::unique_ptr<ITerm> subs(const Var& v, const ITerm& r) const {
-      auto c = std::shared_ptr<ITerm>(r.deepcopy()); return subs(v, c);
+      auto c = std::shared_ptr<ITerm>(r.clone()); return subs(v, c);
     }
     virtual std::unique_ptr<ITerm> subs(const Var&, const std::shared_ptr<const ITerm>&) const = 0;
+
+    virtual const std::shared_ptr<const ITerm>
+      subs_as_arg(const Var& v, const std::shared_ptr<const ITerm>& r) const {
+        return subs(v, r);
+      }
 
     virtual const Type& get_type() const = 0;
     virtual SetOfVars get_free_vars() const = 0;

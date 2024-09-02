@@ -5,7 +5,7 @@
 #include <string>
 
 Var::Var(const Symbol& name, const Type& t)
-  : mName(name), mType(t.clone()) {}
+  : mName(name), mType(t == T ? Tptr : t.clone()) {}
 
 Var* Var::clone_impl() const
 {
@@ -39,11 +39,17 @@ std::string Var::get_uid() const
 std::unique_ptr<ITerm>
 Var::subs(const Var& var, const ITerm& repl) const
 {
-  return has_free_var(var) ? repl.deepcopy() : clone();
+  return has_free_var(var) ? repl.clone() : clone();
 }
 
 std::unique_ptr<ITerm>
 Var::subs(const Var& var, const std::shared_ptr<const ITerm>& repl) const
 {
-  return has_free_var(var) ? repl->deepcopy() : clone();
+  return has_free_var(var) ? repl->clone() : clone();
+}
+
+const std::shared_ptr<const ITerm>
+Var::subs_as_arg(const Var& var, const std::shared_ptr<const ITerm>& repl) const
+{
+  return has_free_var(var) ? repl : clone();
 }

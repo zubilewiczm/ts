@@ -5,8 +5,8 @@
 
 #include "Util.h"
 
-const Type T("Type");
-const Type N("Empty");
+const Type T("⊤");
+const Type N("⊥");
 const std::shared_ptr<const Type> Tptr(&T, [](const auto&){});
 
 

@@ -6,6 +6,7 @@
 class IUIDComparable
 {
   public:
+    virtual ~IUIDComparable() = default;
     virtual std::string get_uid() const = 0;
 
     friend bool operator==(const IUIDComparable&, const IUIDComparable&);

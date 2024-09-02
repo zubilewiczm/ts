@@ -5,6 +5,8 @@
 
 class INameable {
   public:
+    virtual ~INameable() = default;
+
     virtual std::string get_name() const {
       return has_alias() ? get_alias() : get_true_name();
     }

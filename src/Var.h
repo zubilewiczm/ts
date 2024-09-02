@@ -30,6 +30,9 @@ class Var :
     std::unique_ptr<ITerm> subs(const Var&, const ITerm&) const override;
     std::unique_ptr<ITerm> subs(const Var&, const std::shared_ptr<const ITerm>&) const override;
 
+    const std::shared_ptr<const ITerm>
+      subs_as_arg(const Var&, const std::shared_ptr<const ITerm>&) const override;
+
     std::string get_true_name() const override;
     std::string get_true_long_name() const override;
     std::string get_uid() const override;

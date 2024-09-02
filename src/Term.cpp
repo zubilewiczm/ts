@@ -11,19 +11,15 @@
 #include <sstream>
 #include <string>
 
-Term::Term(const Symbol& name, const Type& type, const ArgList& vars)
-  : mName(name), mType(), mArgs(vars), mFreeVars(), PNameableWithStoredAlias()
+Term::Term(const Symbol& name, const Type& type, const ArgList& vars) :
+  mName(name),
+  mType(type == T ? Tptr : type.clone()),
+  mArgs(vars),
+  mFreeVars(vars.get_free_vars()),
+  PNameableWithStoredAlias()
 {
-  if (type != T) {
-    mType = std::shared_ptr<const Type>(type.clone());
-  }
-  else {
-    mType = Tptr;
-  }
-
   auto tvars = mType->get_free_vars();
-  auto argvars = mArgs.get_free_vars();
-  if (!std::includes(argvars.begin(), argvars.end(),
+  if (!std::includes(mFreeVars.begin(), mFreeVars.end(),
                      tvars.begin(), tvars.end()) )
   {
     std::stringstream err;
@@ -33,7 +29,6 @@ Term::Term(const Symbol& name, const Type& type, const ArgList& vars)
         << get_name() << ".";
     throw type_exception(err.str());
   }
-  mFreeVars = std::move(mArgs.get_free_vars());
 }
 
 Term::Term(const Symbol& name, const Type& type) : Term(name, type, {}) {}
@@ -59,13 +54,16 @@ Term::subs(const Var& var, const std::shared_ptr<const ITerm>& repl) const
   auto  it = fv.find(var);
   
   if (it != fv.end()) {
-    auto rfv = repl->get_free_vars();
-
-    auto subs_result = std::shared_ptr<ITerm>(self_copy->mType->subs(var, repl));
-    self_copy->mType = std::reinterpret_pointer_cast<Type>(subs_result);
+    if (self_copy->mType->has_free_var(var)) {
+      auto type_ptr = std::static_pointer_cast<const ITerm>(self_copy->mType);
+      auto subs_type = type_ptr->subs_as_arg(var, repl);
+      self_copy->mType = std::static_pointer_cast<const Type>(subs_type);
+    }
 
     self_copy->mArgs.subs_inplace(var, repl);
     fv.erase(it);
+
+    auto rfv = repl->get_free_vars();
     fv.insert(rfv.begin(), rfv.end());
   }
   return self_copy;

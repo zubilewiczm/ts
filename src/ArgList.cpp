@@ -75,7 +75,7 @@ void ArgList::subs_inplace(const Var& v, const TermPtr& t)
 {
   for (auto& term_i : mArgs) {
     if (term_i->has_free_var(v)) {
-      term_i = term_i->subs(v, t);
+      term_i = term_i->subs_as_arg(v, t);
     }
   }
 }
