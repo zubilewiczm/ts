@@ -18,7 +18,9 @@ CXXFLAGS  =$(INCLUDES) -MMD -MP -fdiagnostics-color=always
 LDFLAGS   =$(LIBRARIES)
 DBGFLAGS  =-O$(OPTLEVEL) -g$(GDBLEVEL)
 
-OBJ := main.o var.o type.o term.o func.o lambda.o util.o exception.o
+OBJ := main.o Var.o Type.o Term.o Util.o Exception.o \
+			 ArgList.o Symbol.o \
+			 interfaces/ITerm.o interfaces/IUIDComparable.o
 
 INCLUDES  =$(SRCDIR:%=-I"%")
 LIBRARIES =$(LIBDIR:%=-L"%") $(LIBS:%=-l%)
@@ -54,7 +56,8 @@ $(BINDIR)/$(BIN) : $(OBJFULL)
 	$(CXX) -o $(BINDIR)/$(BIN) $(LDFLAGS) $(OBJFULL) $(LOG)
 
 $(OBJFULL) : $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@echo $<
+	@echo $< $(@D)
+	@mkdir -p $(@D)
 	$(CXX) -c -o $@ $(CXXFLAGS) $(DBGFLAGS) $< $(LOG)
 
 -include $(DEPS)

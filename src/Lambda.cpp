@@ -1,6 +1,6 @@
-#include "lambda.h"
-#include "var.h"
-#include "util.h"
+#include "Lambda.h"
+#include "Var.h"
+#include "Util.h"
 
 #include <memory>
 #include <string>

@@ -1,8 +1,8 @@
 #ifndef _D_LAMBDA
 #define _D_LAMBDA
 
-#include "type.h"
-#include "func.h"
+#include "Type.h"
+#include "Func.h"
 #include <memory>
 
 class Lambda : public Type

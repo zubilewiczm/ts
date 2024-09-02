@@ -1,6 +1,6 @@
-#include "func.h"
-#include "var.h"
-#include "util.h"
+#include "Func.h"
+#include "Var.h"
+#include "Util.h"
 #include <memory>
 
 Func::Func(

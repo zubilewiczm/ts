@@ -1,7 +1,7 @@
 #ifndef _D_FUNC
 #define _D_FUNC
 
-#include "term.h"
+#include "Term.h"
 #include <cstring>
 #include <memory>
 #include <string>
