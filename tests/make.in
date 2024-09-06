@@ -1,0 +1,33 @@
+TEST-BIN    =ts-test
+TEST-SRCDIR =$(PREFIX)/tests
+TEST-OBJDIR =$(OBJDIR)/tests
+TEST-BINDIR =$(TEST-SRCDIR)
+
+TEST-SRC := $(call getcppfiles,$(TEST-SRCDIR))
+TEST := $(TEST-SRC:.cpp=.o)
+
+TESTFULL =$(addprefix $(TEST-OBJDIR)/,$(TEST))
+TESTREQS =$(filter-out %/main.o,$(OBJFULL))
+TESTDEPS =$(TESTFULL:.o=.d)
+
+.phony : tests clean-tests
+debug : tests
+
+clean-tests:
+	@rm -f $(TESTFULL) $(TEST-BINDIR)/$(TEST-BIN)
+	@echo "Cleaned tests"
+clean : clean-tests
+
+tests : LIBS +=UnitTest++
+tests : $(TEST-BINDIR)/$(TEST-BIN)
+
+$(TESTFULL) : $(TEST-OBJDIR)/%.o : $(TEST-SRCDIR)/%.cpp $(TESTREQS)
+	@echo → $<
+	@mkdir -p $(@D)
+	@$(CXX) -c -o $@ $(CXXFLAGS) $< $(LOG)
+
+$(TEST-BINDIR)/$(TEST-BIN) : $(TESTFULL)
+	@echo → $@
+	@$(CXX) -o $(TEST-BINDIR)/$(TEST-BIN) $(TESTFULL) $(TESTREQS) $(LDFLAGS) $(LOG)
+
+-include $(TESTDEPS)

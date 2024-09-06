@@ -10,18 +10,22 @@ BINDIR    =$(PREFIX)
 OBJDIR    =$(PREFIX)/obj
 LIBDIR    =$(PREFIX)/lib
 LIBS      =
+IGNORE    = Func.cpp Lambda.cpp
 	  
 C         =gcc
-CFLAGS    =$(INCLUDES) -MMD -MP
+CFLAGS    =$(INCLUDES)
 CXX       =g++
-CXXFLAGS  =$(INCLUDES) -MMD -MP -fdiagnostics-color=always
+CXXFLAGS  =$(INCLUDES) -fdiagnostics-color=always
 LDFLAGS   =$(LIBRARIES)
 DBGFLAGS  =-O$(OPTLEVEL) -g$(GDBLEVEL)
 PROFFLAGS =-pg
+DEPFLAGS  =-MMD -MP
 
-OBJ := main.o Var.o Type.o Term.o Util.o Exception.o \
-			 ArgList.o Symbol.o \
-			 interfaces/ITerm.o interfaces/IUIDComparable.o
+getcppfiles =$(shell ./get-cpp-files.sh $(1))
+
+SRC := $(call getcppfiles,$(SRCDIR))
+SRC := $(filter-out $(IGNORE),$(SRC))
+OBJ := $(SRC:.cpp=.o)
 
 INCLUDES  =$(SRCDIR:%=-I"%")
 LIBRARIES =$(LIBDIR:%=-L"%") $(LIBS:%=-l%)
@@ -29,14 +33,14 @@ OBJFULL   =$(addprefix $(OBJDIR)/,$(OBJ))
 ASMFULL   =$(addprefix $(ASMDIR)/,$(ASM))
 DEPS      =$(OBJFULL:.o=.d)
 
-OPTLEVEL  =0
+OPTLEVEL  =g
 GDBLEVEL  =3
 
 LOG =2>&1 | tee -a $(PREFIX)/make.log
 
 ##################################################################
 
-.PHONY: release debug asm clean all print remove-logs
+.PHONY: release debug asm clean all print remove-logs tests
 
 debug : CFLAGS += $(DBGFLAGS) $(PROFFLAGS)
 debug : CXXFLAGS += $(DBGFLAGS) $(PROFFLAGS)
@@ -48,7 +52,7 @@ release : all
 asm : $(ASM)
 
 clean :
-	rm -f $(OBJFULL) $(BINDIR)/$(BIN)
+	@rm -f $(OBJFULL) $(BINDIR)/$(BIN)
 	@echo "Cleaned"
 
 print :
@@ -59,11 +63,14 @@ all : $(BINDIR)/$(BIN)
 ##################################################################
 
 $(BINDIR)/$(BIN) : $(OBJFULL)
-	$(CXX) -o $(BINDIR)/$(BIN) $(LDFLAGS) $(OBJFULL) $(LOG)
+	@echo → $@
+	@$(CXX) -o $(BINDIR)/$(BIN) $(LDFLAGS) $(OBJFULL) $(LOG)
 
 $(OBJFULL) : $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@echo $<
+	@echo → $<
 	@mkdir -p $(@D)
-	$(CXX) -c -o $@ $(CXXFLAGS) $< $(LOG)
+	@$(CXX) -c -o $@ $(CXXFLAGS) $(DEPFLAGS) $< $(LOG)
 
 -include $(DEPS)
+
+-include tests/make.in

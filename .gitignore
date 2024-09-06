@@ -1,5 +1,9 @@
 ts
-obj/*
+tests/ts-test
+
 make.log
 gmon.out
+
+obj/*
+
 *.txt
