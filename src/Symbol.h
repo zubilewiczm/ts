@@ -14,6 +14,8 @@ class Symbol : public PNameableWithStoredAlias
 
     std::string get_true_name() const override;
     std::string get_true_long_name() const override;
+    std::string get_true_name_recursive() const override;
+    std::string get_true_long_name_recursive() const override;
 
   protected:
     static bool is_name_valid(const std::string&);

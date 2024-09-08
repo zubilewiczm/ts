@@ -69,14 +69,14 @@ Term::subs(const Var& var, const std::shared_ptr<const ITerm>& repl) const
   return self_copy;
 }
 
+std::string Term::get_true_name_recursive() const
+{
+  return mName.get_true_name() + mArgs.get_true_name();
+}
+
 std::string Term::get_true_name() const
 {
   return mName.get_name() + mArgs.get_name();
-}
-
-std::string Term::get_true_long_name() const
-{
-  return get_true_name() + " : " + mType->get_name();
 }
 
 std::string Term::get_uid() const
@@ -85,18 +85,4 @@ std::string Term::get_uid() const
   uid += mArgs.get_uid_fragment();
   uid += ":" + mType->get_uid();
   return uid;
-}
-
-
-ArgList::TermPtr Term::operator[](std::size_t i) const
-{
-  int len = mArgs.size();
-  if (i >= len || i < 0) {
-    std::stringstream ss;
-    ss << "The term " << get_name() << " has no argument " << i;
-    throw type_exception(ss.str());
-  }
-  else {
-    return mArgs[i];
- }
 }

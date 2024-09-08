@@ -17,9 +17,19 @@ Symbol::Symbol(const std::string& name) : mName(name), PNameableWithStoredAlias(
   }
 }
 
+std::string Symbol::get_true_long_name_recursive() const
+{
+  return mName;
+}
+
+std::string Symbol::get_true_name_recursive() const
+{
+  return mName;
+}
+
 std::string Symbol::get_true_long_name() const
 {
-  return get_name();
+  return mName;
 }
 
 std::string Symbol::get_true_name() const

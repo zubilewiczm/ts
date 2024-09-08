@@ -11,6 +11,8 @@
 #include "IUIDComparable.h"
 #include "IClonable.h"
 
+#include "../Symbol.h"
+
 class Var;
 class Type;
 
@@ -42,6 +44,11 @@ class ITerm :
         return subs(v, r);
       }
 
+    std::string get_long_name() const override;
+    std::string get_true_long_name() const override;
+    std::string get_true_long_name_recursive() const override;
+
+    virtual Symbol& get_head() = 0;
     virtual const Type& get_type() const = 0;
     virtual SetOfVars get_free_vars() const = 0;
     virtual bool has_free_var(const Var& v) const {

@@ -21,10 +21,10 @@ class Type :
     Type(const Symbol&);
     Type(const Symbol&, const ArgList&);
     
+    std::string get_true_name_recursive() const override;
     std::string get_true_name() const override;
-    std::string get_true_long_name() const override;
     std::string get_uid() const override;
-    Symbol& get_head() { return mName; }
+    Symbol& get_head() override { return mName; }
 
     const Type& get_type() const override { return T; }
     SetOfVars get_free_vars() const override { return mFreeVars; }
@@ -32,7 +32,7 @@ class Type :
 
     bool is_type() const override { return true; }
 
-    ArgList::TermPtr operator[](std::size_t) const;
+    ArgList::TermPtr operator[](std::size_t i) const { return mArgs[i]; }
 
   protected:
     Type* clone_impl() const override;

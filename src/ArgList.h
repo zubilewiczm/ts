@@ -24,13 +24,14 @@ class ArgList
     ArgList(const std::initializer_list<std::reference_wrapper<ITerm>>&);
 
     std::string get_name() const;
+    std::string get_true_name() const;
     std::string get_uid_fragment() const;
 
     void subs_inplace(const Var&, const TermPtr&);
     SetOfVars get_free_vars() const;
     ArgList deepcopy();
 
-    TermPtr operator[](std::size_t p) const { return mArgs[p]; }
+    TermPtr operator[](std::size_t p) const;
     std::size_t size() const { return mArgs.size(); }
 
   protected:

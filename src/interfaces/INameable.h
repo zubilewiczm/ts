@@ -14,6 +14,8 @@ class INameable {
       return has_alias() ? get_alias() : get_true_long_name();
     }
 
+    virtual std::string get_true_long_name_recursive() const = 0;
+    virtual std::string get_true_name_recursive() const = 0;
     virtual std::string get_true_long_name() const = 0;
     virtual std::string get_true_name() const = 0;
     virtual std::string get_alias() const = 0;

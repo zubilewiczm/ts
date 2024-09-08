@@ -1,5 +1,6 @@
 #include "ArgList.h"
 
+#include "Exception.h"
 #include "Var.h"
 
 #include <algorithm>
@@ -7,6 +8,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <string>
+#include <sstream>
 
 ArgList::ArgList() : mArgs() {}
 ArgList::ArgList(const TermVec& args) : mArgs(args) {}
@@ -29,6 +31,13 @@ ArgList ArgList::deepcopy()
     }
   );
   return tgt;
+}
+
+std::string ArgList::get_true_name() const
+{
+  return compose_str("(", ")", [](const TermPtr& a) -> std::string {
+    return a->get_true_name_recursive();
+  });
 }
 
 std::string ArgList::get_name() const
@@ -78,4 +87,17 @@ void ArgList::subs_inplace(const Var& v, const TermPtr& t)
       term_i = term_i->subs_as_arg(v, t);
     }
   }
+}
+
+ArgList::TermPtr ArgList::operator[](std::size_t i) const
+{
+  int len = mArgs.size();
+  if (i >= len || i < 0) {
+    std::stringstream ss;
+    ss << "The term " << get_name() << " has no argument " << i;
+    throw type_exception(ss.str());
+  }
+  else {
+    return mArgs[i];
+ }
 }

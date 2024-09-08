@@ -31,16 +31,16 @@ class Term :
     Term(const Symbol&, const Type&, const ArgList&);
     virtual ~Term() = default;
 
+    std::string get_true_name_recursive() const override;
     std::string get_true_name() const override;
-    std::string get_true_long_name() const override;
     std::string get_uid() const override;
-    Symbol& get_head() { return mName; }
+    Symbol& get_head() override { return mName; }
 
     const Type& get_type() const override { return *mType;}
     SetOfVars get_free_vars() const override { return mFreeVars; }
     std::unique_ptr<ITerm> subs(const Var&, const std::shared_ptr<const ITerm>&) const override;
 
-    ArgList::TermPtr operator[](std::size_t) const;
+    ArgList::TermPtr operator[](std::size_t i) const { return mArgs[i]; }
 
   protected:
     Term* clone_impl() const override;

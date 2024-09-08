@@ -23,14 +23,14 @@ Type* Type::deepcopy_impl() const
   return copy;
 }
 
-std::string Type::get_true_name() const
+std::string Type::get_true_name_recursive() const
 {
-  return mName.get_name();
+  return mName.get_true_name() + mArgs.get_true_name();
 }
 
-std::string Type::get_true_long_name() const
+std::string Type::get_true_name() const
 {
-  return mName.get_name() + " : " + T.get_true_name();
+  return mName.get_name() + mArgs.get_name();
 }
 
 std::string Type::get_uid() const

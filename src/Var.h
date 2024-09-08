@@ -26,6 +26,7 @@ class Var :
     bool is_var() const override { return true; }
     bool is_pure() const override { return true; }
 
+    Symbol& get_head() override { return mName; }
     const Type& get_type() const override { return *mType; }
     std::unique_ptr<ITerm> subs(const Var&, const ITerm&) const override;
     std::unique_ptr<ITerm> subs(const Var&, const std::shared_ptr<const ITerm>&) const override;
@@ -33,8 +34,8 @@ class Var :
     const std::shared_ptr<const ITerm>
       subs_as_arg(const Var&, const std::shared_ptr<const ITerm>&) const override;
 
+    std::string get_true_name_recursive() const override;
     std::string get_true_name() const override;
-    std::string get_true_long_name() const override;
     std::string get_uid() const override;
 
   protected:

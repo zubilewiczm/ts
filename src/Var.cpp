@@ -18,15 +18,14 @@ Var* Var::deepcopy_impl() const {
   return copy;
 }
 
+std::string Var::get_true_name_recursive() const
+{
+  return mName.get_true_name();
+}
 
 std::string Var::get_true_name() const
 {
   return mName.get_name();
-}
-
-std::string Var::get_true_long_name() const
-{
-  return get_true_name() + " : " + mType->get_name();
 }
 
 std::string Var::get_uid() const
