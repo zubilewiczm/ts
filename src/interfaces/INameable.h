@@ -25,4 +25,6 @@ class INameable {
     bool has_alias() const { return get_alias() != ""; }
 };
 
+std::ostream& operator<<(std::ostream& out, const INameable& rhs);
+
 #endif

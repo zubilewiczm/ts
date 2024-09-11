@@ -1,7 +1,8 @@
 #ifndef _D_TYPE
 #define _D_TYPE
 
-#include "Term.h"
+#include "interfaces/ITerm.h"
+#include "ArgList.h"
 
 extern const Type T;
 extern const Type N;
@@ -13,6 +14,8 @@ class Type :
 {
   public:
     using ITerm::subs;
+    using IMakesNewShared<Type>::New;
+    using IMakesNewShared<Type>::NewUnique;
 
   public:
     constexpr static const char* const PFX = "τ";

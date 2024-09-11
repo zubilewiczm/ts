@@ -11,12 +11,20 @@
 #include <sstream>
 #include <string>
 
-Term::Term(const Symbol& name, const Type& type, const ArgList& vars) :
-  mName(name),
-  mType(type == T ? Tptr : type.clone()),
-  mArgs(vars),
-  mFreeVars(vars.get_free_vars()),
-  PNameableWithStoredAlias()
+Term::Term(const Symbol& name, const Type& type, const ArgList& args)
+  : Term(name, type == T ? Tptr : type.clone(), args) {}
+Term::Term(const Symbol& name, const Type& type)
+  : Term(name, type == T ? Tptr : type.clone(), {}) {}
+Term::Term(const Symbol& name)
+  : Term(name, Tptr, {}) {}
+Term::Term(const Symbol& name, std::shared_ptr<const Type> type)
+  : Term(name, type, {}) {}
+Term::Term(const Symbol& name, std::shared_ptr<const Type> type, const ArgList& args)
+  : mName(name),
+    mType(type),
+    mArgs(args),
+    mFreeVars(args.get_free_vars()),
+    PNameableWithStoredAlias()
 {
   auto tvars = mType->get_free_vars();
   if (!std::includes(mFreeVars.begin(), mFreeVars.end(),
@@ -25,16 +33,12 @@ Term::Term(const Symbol& name, const Type& type, const ArgList& vars) :
     std::stringstream err;
     err << "Free variables of "
         << mType->get_name()
-        << " are not included as variables inside the term "
-        << get_name() << ".";
+        << " (namely " << tvars << ") "
+        << "are not included as variables inside the term " << get_name()
+        << " (as " << mFreeVars << ").";
     throw type_exception(err.str());
   }
 }
-
-Term::Term(const Symbol& name, const Type& type) : Term(name, type, {}) {}
-Term::Term(const Symbol& name)
-  : mName(name), mType(Tptr), mArgs(), mFreeVars(),
-    PNameableWithStoredAlias() {}
 
 Term* Term::clone_impl() const { return new Term(*this); }
 Term* Term::deepcopy_impl() const
@@ -44,6 +48,8 @@ Term* Term::deepcopy_impl() const
   copy->mType = std::shared_ptr<const Type>(mType->deepcopy());
   return copy;
 }
+
+
 
 std::unique_ptr<ITerm>
 Term::subs(const Var& var, const std::shared_ptr<const ITerm>& repl) const
@@ -68,6 +74,8 @@ Term::subs(const Var& var, const std::shared_ptr<const ITerm>& repl) const
   }
   return self_copy;
 }
+
+
 
 std::string Term::get_true_name_recursive() const
 {

@@ -1,6 +1,7 @@
 #include <exception>
 #include <iostream>
 
+#include "Term.h"
 #include "Type.h"
 #include "Var.h"
 

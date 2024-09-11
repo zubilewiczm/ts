@@ -17,8 +17,12 @@ class Var :
   public:
     constexpr static const char* const PFX = "σ";
 
+    using IMakesNewShared<Var>::New;
+    using IMakesNewShared<Var>::NewUnique;
+
   public:
     Var(const Symbol&, const Type&);
+    Var(const Symbol&, std::shared_ptr<const Type>);
 
     SetOfVars get_free_vars() const override { return SetOfVars({*this}); }
     bool has_free_var(const Var& v) const override { return v == *this; }

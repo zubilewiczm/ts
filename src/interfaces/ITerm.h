@@ -61,4 +61,6 @@ class ITerm :
     virtual bool is_type() const;
 };
 
+std::ostream& operator<<(std::ostream&, const SetOfVars&);
+
 #endif

@@ -21,6 +21,8 @@ class Term :
 {
   public:
     using ITerm::subs;
+    using IMakesNewShared<Term>::New;
+    using IMakesNewShared<Term>::NewUnique;
 
   public:
     constexpr static const char* const PFX = "ρ";
@@ -29,6 +31,8 @@ class Term :
     Term(const Symbol&);
     Term(const Symbol&, const Type&);
     Term(const Symbol&, const Type&, const ArgList&);
+    Term(const Symbol&, std::shared_ptr<const Type>);
+    Term(const Symbol&, std::shared_ptr<const Type>, const ArgList&);
     virtual ~Term() = default;
 
     std::string get_true_name_recursive() const override;

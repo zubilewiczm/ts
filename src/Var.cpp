@@ -6,6 +6,8 @@
 
 Var::Var(const Symbol& name, const Type& t)
   : mName(name), mType(t == T ? Tptr : t.clone()) {}
+Var::Var(const Symbol& name, std::shared_ptr<const Type> t)
+  : mName(name), mType(t) {}
 
 Var* Var::clone_impl() const
 {
