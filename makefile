@@ -10,7 +10,7 @@ BINDIR    =$(PREFIX)
 OBJDIR    =$(PREFIX)/obj
 LIBDIR    =$(PREFIX)/lib
 LIBS      =
-IGNORE    = Func.cpp Lambda.cpp
+IGNORE    =
 	  
 C         =gcc
 CFLAGS    =$(INCLUDES)
