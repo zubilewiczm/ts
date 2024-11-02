@@ -15,7 +15,7 @@ IGNORE    =
 C         =gcc
 CFLAGS    =$(INCLUDES)
 CXX       =g++
-CXXFLAGS  =$(INCLUDES) -fdiagnostics-color=always
+CXXFLAGS  =$(INCLUDES) -fdiagnostics-color=always -std=c++17
 LDFLAGS   =$(LIBRARIES)
 DBGFLAGS  =-O$(OPTLEVEL) -g$(GDBLEVEL)
 PROFFLAGS =-pg

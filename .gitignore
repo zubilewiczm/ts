@@ -1,6 +1,8 @@
 ts
 tests/ts-test
 
+scratch/*
+
 make.log
 gmon.out
 
