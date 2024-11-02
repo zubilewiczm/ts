@@ -2,6 +2,7 @@
 #define _D_ARGLIST
 
 #include "interfaces/ITerm.h"
+#include "utils/PtrArg.h"
 
 #include <functional>
 #include <initializer_list>
@@ -13,15 +14,16 @@ class ArgList
 {
   public:
     using TermPtr = std::shared_ptr<const ITerm>;
+    using TermPtrArg = PtrArg<ITerm>;
     using TermVec = std::vector<TermPtr>;
 
     using arg_str_gen = std::string (*)(const TermPtr&);
 
   public:
-    ArgList();
+    ArgList() = default;
     ArgList(const TermVec&);
-    ArgList(const TermVec&&);
-    ArgList(const std::initializer_list<std::reference_wrapper<ITerm>>&);
+    ArgList(TermVec&&);
+    ArgList(std::initializer_list<TermPtrArg>);
 
     std::string get_name() const;
     std::string get_true_name() const;

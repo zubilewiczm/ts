@@ -56,3 +56,4 @@ Type::subs(const Var& var, const std::shared_ptr<const ITerm>& repl) const
   }
   return self_copy;
 }
+

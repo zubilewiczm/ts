@@ -1,12 +1,13 @@
 #include "Var.h"
-#include "Type.h"
-#include "Util.h"
+
 #include <memory>
 #include <string>
 
-Var::Var(const Symbol& name, const Type& t)
-  : mName(name), mType(t == T ? Tptr : t.clone()) {}
-Var::Var(const Symbol& name, std::shared_ptr<const Type> t)
+#include "Type.h"
+#include "Util.h"
+
+
+Var::Var(const Symbol& name, PtrArgType t)
   : mName(name), mType(t) {}
 
 Var* Var::clone_impl() const

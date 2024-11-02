@@ -6,33 +6,31 @@
 #include <memory>
 #include <string>
 #include <set>
+#include <type_traits>
 #include <vector>
 
-#include "interfaces/ITerm.h"
+#include "Type.h"
+#include "interfaces/IClonablePtrFactory.h"
 #include "interfaces/IUIDComparable.h"
 #include "interfaces/PNameableWithStoredAlias.h"
+#include "utils/PtrArg.h"
 
 #include "ArgList.h"
 #include "Symbol.h"
 
 class Term :
-  public IClonable<Term>::WithBase<ITerm>,
+  public IClonablePtrFactory<Term, ITerm>,
   public PNameableWithStoredAlias
 {
   public:
     using ITerm::subs;
-    using IMakesNewShared<Term>::New;
-    using IMakesNewShared<Term>::NewUnique;
 
   public:
     constexpr static const char* const PFX = "ρ";
 
   public:
     Term(const Symbol&);
-    Term(const Symbol&, const Type&);
-    Term(const Symbol&, const Type&, const ArgList&);
-    Term(const Symbol&, std::shared_ptr<const Type>);
-    Term(const Symbol&, std::shared_ptr<const Type>, const ArgList&);
+    Term(const Symbol&, PtrArgType, const ArgList& = {});
     virtual ~Term() = default;
 
     std::string get_true_name_recursive() const override;

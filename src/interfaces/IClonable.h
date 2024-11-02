@@ -3,10 +3,12 @@
 
 #include <memory>
 
-#include "IMakesNewShared.h"
-
-template <typename Derived, typename Base>
-class IClonableWithBase : public Base, public IMakesNewShared<Derived>
+template <
+  typename Derived,
+  typename Base,
+  typename SafelyInheritedFrom = Derived
+  >
+class IClonableWithBase : public Base
 {
   public:
     std::unique_ptr<Derived> clone() const
@@ -28,15 +30,15 @@ class IClonableWithBase : public Base, public IMakesNewShared<Derived>
 
   private:
     IClonableWithBase() {}
-    friend Derived;
+    friend SafelyInheritedFrom;
 };
 
-template <typename Derived>
-class IClonable : public IMakesNewShared<Derived>
+template <typename Derived, typename SafelyInheritedFrom = Derived>
+class IClonable
 {
   public:
     template <typename Base>
-      using WithBase = IClonableWithBase<Derived, Base>;
+      using WithBase = IClonableWithBase<Derived, Base, SafelyInheritedFrom>;
 
   public:
     std::unique_ptr<Derived> clone() const
@@ -54,7 +56,7 @@ class IClonable : public IMakesNewShared<Derived>
 
   private:
     IClonable() {}
-    friend Derived;
+    friend SafelyInheritedFrom;
 };
 
 #endif

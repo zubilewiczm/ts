@@ -4,21 +4,19 @@
 #include "Var.h"
 
 #include <algorithm>
-#include <functional>
-#include <initializer_list>
 #include <iterator>
 #include <string>
 #include <sstream>
 
-ArgList::ArgList() : mArgs() {}
 ArgList::ArgList(const TermVec& args) : mArgs(args) {}
-ArgList::ArgList(const TermVec&& args) : mArgs(std::move(args)) {}
-ArgList::ArgList(const std::initializer_list<std::reference_wrapper<ITerm>>& args) 
+ArgList::ArgList(TermVec&& args) : mArgs(std::move(args)) {}
+
+ArgList::ArgList(std::initializer_list<PtrArg<ITerm>> args)
   : mArgs()
 {
   std::transform(args.begin(), args.end(), std::back_inserter(mArgs),
     [&](const auto& a) {
-      return a.get().clone();
+      return a.get();
     });
 }
 
@@ -99,5 +97,5 @@ ArgList::TermPtr ArgList::operator[](std::size_t i) const
   }
   else {
     return mArgs[i];
- }
+  }
 }

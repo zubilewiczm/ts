@@ -2,6 +2,8 @@
 #define _D_TYPE
 
 #include "interfaces/ITerm.h"
+#include "interfaces/IClonablePtrFactory.h"
+#include "utils/PtrArg.h"
 #include "ArgList.h"
 
 extern const Type T;
@@ -9,13 +11,12 @@ extern const Type N;
 extern const std::shared_ptr<const Type> Tptr;
 
 class Type :
-  public IClonable<Type>::WithBase<ITerm>,
+  public IClonablePtrFactory<Type, ITerm>,
   public PNameableWithStoredAlias
 {
   public:
+
     using ITerm::subs;
-    using IMakesNewShared<Type>::New;
-    using IMakesNewShared<Type>::NewUnique;
 
   public:
     constexpr static const char* const PFX = "τ";
@@ -46,5 +47,13 @@ class Type :
     ArgList mArgs;
     SetOfVars mFreeVars;
 };
+
+struct TypeAllocator {
+  std::shared_ptr<const Type> operator()(const Type& type) {
+    return type == T ? Tptr : type.clone();
+  }
+};
+
+using PtrArgType = PtrArg<Type, std::shared_ptr<Type>, TypeAllocator>;
 
 #endif

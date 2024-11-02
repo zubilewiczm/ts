@@ -117,9 +117,9 @@ SUITE(tsInit)
     CountCopies<Var> v("A", T);
     CountCopies<Var> w("B", T);
     CountCopies<Var> u("C", T);
-    CountCopies<Type> P("P", ArgList( {v,w} ));
-    CountCopies<Type> R("R", ArgList( {w} ));
-    CountCopies<Term> Q("Q", R, ArgList( {v,w,R} ));
+    CountCopies<Type> P("P", ArgList{v,w});
+    CountCopies<Type> R("R", ArgList{w});
+    CountCopies<Term> Q("Q", R, ArgList{v,w,R});
     Type t("f", {v,P,Q,R});
     CHECK(*t[0] == v);
     CHECK(*t[1] == P);
@@ -133,14 +133,28 @@ SUITE(tsInit)
   TEST(Term_Args_PtrArray) {
     auto v = std::make_shared<CountCopies<Var>>("A", T);
     auto w = Var::New("B", T);
-    auto P = Type::New("P", ArgList({v,w}));
-    auto R = Type::New("R", ArgList({w}));
-    auto Q = Term::New("Q", R, ArgList({w}));
-    Term t("f", P, ArgList({Q,v}));
+    auto P = Type::New("P", ArgList{v,w});
+    auto R = Type::New("R", ArgList{w});
+    auto Q = Term::New("Q", R, ArgList{w});
+    Term t("f", P, {Q,v});
     CHECK(*t[0] == *Q);
     CHECK(*t[1] == *v);
     CHECK_THROW(t[2], type_exception);
     CHECK(t.get_type() == *P);
     CHECK(v->get_copies() == 0);
+  }
+  TEST(Term_Args_Mixed) {
+    auto v = std::make_shared<CountCopies<Var>>("A", T);
+    auto w = Var::New("B", T);
+    auto P = Type::New("P", ArgList{v,w});
+    auto R = Type::New("R", ArgList{w});
+    auto Q = Term::New("Q", R, ArgList{w});
+    CountCopies<Term> t{"f", P, ArgList{Q,v}};
+    Term s{"g", P, {t,Q,w}};
+    CHECK(*s[0] == t);
+    CHECK(*s[1] == *Q);
+    CHECK(*s[2] == *w);
+    CHECK_THROW(s[3], type_exception);
+    CHECK(t.get_copies() == 1);
   }
 }

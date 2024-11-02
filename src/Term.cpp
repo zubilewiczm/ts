@@ -11,15 +11,9 @@
 #include <sstream>
 #include <string>
 
-Term::Term(const Symbol& name, const Type& type, const ArgList& args)
-  : Term(name, type == T ? Tptr : type.clone(), args) {}
-Term::Term(const Symbol& name, const Type& type)
-  : Term(name, type == T ? Tptr : type.clone(), {}) {}
 Term::Term(const Symbol& name)
   : Term(name, Tptr, {}) {}
-Term::Term(const Symbol& name, std::shared_ptr<const Type> type)
-  : Term(name, type, {}) {}
-Term::Term(const Symbol& name, std::shared_ptr<const Type> type, const ArgList& args)
+Term::Term(const Symbol& name, PtrArgType type, const ArgList& args)
   : mName(name),
     mType(type),
     mArgs(args),
@@ -94,3 +88,4 @@ std::string Term::get_uid() const
   uid += ":" + mType->get_uid();
   return uid;
 }
+

@@ -5,24 +5,21 @@
 #include <string>
 #include <memory>
 
-#include "Symbol.h"
+#include "Type.h"
 
+#include "interfaces/IClonablePtrFactory.h"
 #include "interfaces/ITerm.h"
 #include "interfaces/PNameableWithStoredAlias.h"
 
 class Var :
-  public IClonable<Var>::WithBase<ITerm>,
+  public IClonablePtrFactory<Var, ITerm>,
   public PNameableWithStoredAlias
 {
   public:
     constexpr static const char* const PFX = "σ";
 
-    using IMakesNewShared<Var>::New;
-    using IMakesNewShared<Var>::NewUnique;
-
   public:
-    Var(const Symbol&, const Type&);
-    Var(const Symbol&, std::shared_ptr<const Type>);
+    Var(const Symbol&, PtrArgType);
 
     SetOfVars get_free_vars() const override { return SetOfVars({*this}); }
     bool has_free_var(const Var& v) const override { return v == *this; }
